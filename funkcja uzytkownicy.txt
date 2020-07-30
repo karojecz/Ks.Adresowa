@@ -1,0 +1,140 @@
+#include <iostream>
+#include <iostream>
+#include<windows.h>
+#include<cstdlib>
+#include<conio.h>
+#include<string>
+#include<fstream>
+#include<vector>
+#include <sstream>
+
+using namespace std;
+struct Uzytkownicy
+{
+    int id;
+    string nazwa,haslo;
+};
+int RejestracjaNowegoUzytkownika(vector<Uzytkownicy> &uzytkownik, int idUzytkownika)
+{
+    int iloscKontaktow=uzytkownik.size();
+    if(!uzytkownik.empty())
+    {
+        idUzytkownika = uzytkownik[iloscKontaktow-1].id;
+    }
+    fstream plik;
+    uzytkownik.push_back(Uzytkownicy());
+    cout<<"podaj nazwe uzytkownika"<<endl;
+    cin>>uzytkownik[iloscKontaktow].nazwa;
+    cout<<"podaj haslo"<<endl;
+    cin>>uzytkownik[iloscKontaktow].haslo;
+    cin.sync();
+
+    uzytkownik[iloscKontaktow].id=idUzytkownika+1;
+
+    plik.open("Uzytkownicy.txt",ios::out|ios::app);
+
+    if (plik.good())
+    {
+        plik<<uzytkownik[iloscKontaktow].id<<"|";
+        plik<<uzytkownik[iloscKontaktow].nazwa<<"|";
+        plik<<uzytkownik[iloscKontaktow].haslo<<"|";
+        plik<<endl;
+        plik.close();
+    }
+    else
+    {
+        cout << "Nie mozna otworzyc pliku: ksiazka Adresowa.txt" << endl;
+        Sleep(1500);
+    }
+    system ("cls");
+    cout<<"Dodano nowego uzytkownika"<<endl;
+    Sleep(1500);
+
+    return idUzytkownika+1;
+}
+WczytajUzytkownika(vector<Uzytkownicy> &uzytkownik, int idUzytkownika)
+{
+     fstream plik;
+    plik.open("Uzytkownicy.txt",ios::in);
+
+    if (plik.good()==false)
+    {
+        cout<<"plik nie istnieje! zostanie on utworzny przy dodaniu pierwszego kontaktu"<<endl;
+        Sleep(1000);
+        return (0);
+    }
+    string linia,item;
+    int nr_lini=1, j=0;
+    while(getline(plik,linia))
+    {
+        int nr_pola=1;
+        uzytkownik.push_back(Uzytkownicy());
+        stringstream ss(linia);
+        while (getline(ss, item, '|'))
+        {
+            switch(nr_pola)
+            {
+            case 1:
+                uzytkownik[j].id=atoi(item.c_str());
+                break;
+            case 2:
+                uzytkownik[j].nazwa=item;
+                break;
+            case 3:
+                uzytkownik[j].haslo=item;
+                break;
+            }
+            nr_pola++;
+        }
+        j++;
+        nr_lini++;
+    }
+    plik.close();
+    return j;
+}
+ Logowanie(vector<Uzytkownicy> &uzytkownik, int idUzytkownika)
+ {
+    fstream plik;
+
+     string nazwa,haslo;
+     int iloscKontaktow=uzytkownik.size();
+     cout<<"podaj nazwe uzytkownika"<<endl;
+     cin>>nazwa;
+
+     for(int i=0; i<iloscKontaktow; i++)
+    {
+        if (uzytkownik[i].nazwa==nazwa)
+        {
+            cout<<"podaj haslo"<<endl;
+            cin>>haslo;
+            if(uzytkownik[i].haslo==haslo)
+            {
+                nazwa=nazwa+=".txt";
+                cout<<"udalo sie zalogowac"<<endl;
+                plik.open(nazwa.c_str(),ios::out|ios::app);
+                plik<<uzytkownik[i].nazwa<<"|"<<endl;
+                plik.close();
+            }
+        }
+    }
+ }
+
+int main()
+{
+    vector<Uzytkownicy> uzytkownik;
+    int idUzytkownika=0;
+    string NazwaUzytkownika;
+    idUzytkownika=WczytajUzytkownika(uzytkownik,idUzytkownika);
+    idUzytkownika=RejestracjaNowegoUzytkownika(uzytkownik,idUzytkownika);
+
+    Logowanie(uzytkownik,idUzytkownika);
+
+    int iloscKontaktow=uzytkownik.size();
+    for(int i=0; i<iloscKontaktow; i++)
+    {
+        cout<<uzytkownik[i].id<<endl;
+        cout<<uzytkownik[i].nazwa<<endl;
+        cout<<uzytkownik[i].haslo<<endl;
+    }
+    return 0;
+}
