@@ -10,17 +10,21 @@ using namespace std;
 
 struct Kontakt
 {
-    int id;
+    int id,idUzytkownika;
     string imie,nazwisko,adres,email,telefon;
 };
+struct Uztkownicy
+{
+    int idUzytkownika;
+    string nazwa,haslo;
+};
 
-int DodawanieKontaktu(vector<Kontakt> &osoby, int id)
+
+int DodawanieKontaktu(vector<Kontakt> &osoby, int id, int idUzytkownika)
 {
     int iloscKontaktow=osoby.size();
-    if(!osoby.empty())
-    {
-        id = osoby[iloscKontaktow-1].id;
-    }
+
+
     fstream plik;
     osoby.push_back(Kontakt());
     cout<<"podaj imie"<<endl;
@@ -35,6 +39,7 @@ int DodawanieKontaktu(vector<Kontakt> &osoby, int id)
     cin.sync();
     getline(cin,osoby[iloscKontaktow].adres);
     osoby[iloscKontaktow].id=id+1;
+    osoby[iloscKontaktow].idUzytkownika=idUzytkownika;
 
 
     plik.open("ksiazka Adresowa.txt",ios::out|ios::app);
@@ -42,6 +47,7 @@ int DodawanieKontaktu(vector<Kontakt> &osoby, int id)
     if (plik.good())
     {
         plik<<osoby[iloscKontaktow].id<<"|";
+        plik<<idUzytkownika<<"|";
         plik<<osoby[iloscKontaktow].imie<<"|";
         plik<<osoby[iloscKontaktow].nazwisko<<"|";
         plik<<osoby[iloscKontaktow].telefon<<"|";
@@ -70,6 +76,7 @@ ZapisWektoraDoPliku(vector<Kontakt>&osoby)
         if (plik.good())
         {
             plik<<osoby[j].id<<"|";
+            plik<<osoby[j].idUzytkownika<<"|";
             plik<<osoby[j].imie<<"|";
             plik<<osoby[j].nazwisko<<"|";
             plik<<osoby[j].telefon<<"|";
@@ -139,9 +146,9 @@ void SzukajPoNazwisku(vector<Kontakt> &osoby,int id)
         system ("cls");
     }
 }
-int WczytajDaneDoTablicy(vector<Kontakt> &osoba)
+int WczytajCalyPlik(vector<Kontakt> &WszyskieKontakty)
 {
-    fstream plik;
+fstream plik;
     plik.open("ksiazka Adresowa.txt",ios::in);
 
     if (plik.good()==false)
@@ -155,29 +162,32 @@ int WczytajDaneDoTablicy(vector<Kontakt> &osoba)
     while(getline(plik,linia))
     {
         int nr_pola=1;
-        osoba.push_back(Kontakt());
+        WszyskieKontakty.push_back(Kontakt());
         stringstream ss(linia);
         while (getline(ss, item, '|'))
         {
             switch(nr_pola)
             {
             case 1:
-                osoba[j].id=atoi(item.c_str());
+                WszyskieKontakty[j].id=atoi(item.c_str());
                 break;
             case 2:
-                osoba[j].imie=item;
+                WszyskieKontakty[j].idUzytkownika=atoi(item.c_str());
                 break;
             case 3:
-                osoba[j].nazwisko=item;
+                WszyskieKontakty[j].imie=item;
                 break;
             case 4:
-                osoba[j].telefon=item;
+                WszyskieKontakty[j].nazwisko=item;
                 break;
             case 5:
-                osoba[j].email=item;
+                WszyskieKontakty[j].telefon=item;
                 break;
             case 6:
-                osoba[j].adres=item;
+                WszyskieKontakty[j].email=item;
+                break;
+            case 7:
+                WszyskieKontakty[j].adres=item;
                 break;
             }
             nr_pola++;
@@ -187,6 +197,72 @@ int WczytajDaneDoTablicy(vector<Kontakt> &osoba)
     }
     plik.close();
     return j;
+}
+
+
+int WczytajDaneDoTablicy(vector<Kontakt> &osoba, int idUzytkownika)
+{
+
+    fstream plik;
+    plik.open("ksiazka Adresowa.txt",ios::in);
+
+    if (plik.good()==false)
+    {
+        cout<<"plik nie istnieje! zostanie on utworzny przy dodaniu pierwszego kontaktu"<<endl;
+        Sleep(1000);
+        return (0);
+    }
+    string linia,item, imie1, nazwisko1, telefon1, email1, adres1;
+    int nr_lini=1, j=0,id1,idUzytkownika1;
+    while(getline(plik,linia))
+    {
+        int nr_pola=1;
+        stringstream ss(linia);
+        while (getline(ss, item, '|'))
+        {
+            switch(nr_pola)
+            {
+            case 1:
+                id1=atoi(item.c_str());
+                break;
+            case 2:
+                idUzytkownika1=atoi(item.c_str());
+                break;
+            case 3:
+                imie1=item;
+                break;
+            case 4:
+                nazwisko1=item;
+                break;
+            case 5:
+                telefon1=item;
+                break;
+            case 6:
+                email1=item;
+                break;
+            case 7:
+                adres1=item;
+                break;
+            }
+            nr_pola++;
+        }
+        if(idUzytkownika==idUzytkownika1)
+        {
+            osoba.push_back(Kontakt());
+            osoba[j].id=id1;
+            osoba[j].idUzytkownika=idUzytkownika1;
+            osoba[j].imie=imie1;
+            osoba[j].nazwisko=nazwisko1;
+            osoba[j].telefon=telefon1;
+            osoba[j].email=email1;
+            osoba[j].adres=adres1;
+            j++;
+        }
+        nr_lini++;
+
+    }
+    plik.close();
+    return id1;
 }
 void WyswietlWszystkieKontakty(vector<Kontakt> &osoby,int id)
 {
@@ -201,55 +277,59 @@ void WyswietlWszystkieKontakty(vector<Kontakt> &osoby,int id)
     cout<<"Aby wrocic do menu wcisnij dowolny kalwisz"<<endl;
     getch();
 }
-void Edytowanie(vector<Kontakt>&osoby, int id)
+void Edytowanie(vector<Kontakt>&osoby,vector<Kontakt> &WszystkieKontakty, int id)
 {
+    WczytajCalyPlik(WszystkieKontakty);
+
     cout<<"podaj id osoby ktora chcesz edytowac "<<endl;
     cin>>id;
     system ("cls");
     char wybor;
-    string ZmienianePole;
     cout<<"1 - imie"<<endl;
     cout<<"2 - nazwisko"<<endl;
     cout<<"3 - numer telefonu"<<endl;
     cout<<"4 - email"<<endl;
     cout<<"5 - adres"<<endl;
 
-    for(int i=0; i<osoby.size(); i++)
+    int iloscKontaktow=WszystkieKontakty.size();
+    for(int i=0; i<iloscKontaktow; i++)
     {
-        if(osoby[i].id==id)
+        if(WszystkieKontakty[i].id==id)
         {
             cin>>wybor;
             switch(wybor)
             {
             case '1':
                 cout<<"Podaj nowe imie"<<endl;
-                cin>>osoby[i].imie;
+                cin>>WszystkieKontakty[i].imie;
                 break;
             case '2':
                 cout<<"Podaj nowe nazwisko"<<endl;
-                cin>>osoby[i].nazwisko;
+                cin>>WszystkieKontakty[i].nazwisko;
                 break;
             case '3':
                 cout<<"Podaj nowy numer telefonu"<<endl;
-                cin>>osoby[i].telefon;
+                cin>>WszystkieKontakty[i].telefon;
                 break;
             case '4':
                 cout<<"Podaj nowy email"<<endl;
-                cin>>osoby[i].email;
+                cin>>WszystkieKontakty[i].email;
                 break;
             case '5':
                 cout<<"Podaj nowy adres"<<endl;
-                cin>>osoby[i].adres;
+                cin>>WszystkieKontakty[i].adres;
                 break;
             }
         }
     }
-    ZapisWektoraDoPliku(osoby);
+
+    ZapisWektoraDoPliku(WszystkieKontakty);
 
     cout<<"dane zostaly zmienione";
     Sleep(1500);
 }
-UsunKontakty(vector<Kontakt>&osoby)
+
+    int UsunKontakty(vector<Kontakt>&osoby)
 {
     int id;
     char wybor;
@@ -271,14 +351,137 @@ UsunKontakty(vector<Kontakt>&osoby)
     }
     ZapisWektoraDoPliku(osoby);
 }
+int WczytajUzytkownikow(vector<Uztkownicy> &ListaUzytkownikow)
+{
+    fstream plik;
+    plik.open("Uzytkownicy.txt",ios::in);
+    if (plik.good()==false)
+    {
+        cout<<"Brak uzytkownikow musisz sie zarejestrowac"<<endl;
+        Sleep(1500);
+        system("cls");
+        return (0);
+    }
+    string linia,item;
+    int nr_lini=1, j=0;
+    while(getline(plik,linia))
+    {
+        int nr_pola=1;
+        ListaUzytkownikow.push_back(Uztkownicy());
+        stringstream ss(linia);
+        while (getline(ss, item, '|'))
+        {
+            switch(nr_pola)
+            {
+            case 1:
+                ListaUzytkownikow[j].idUzytkownika=atoi(item.c_str());
+                break;
+            case 2:
+                ListaUzytkownikow[j].nazwa=item;
+                break;
+            case 3:
+                ListaUzytkownikow[j].haslo=item;
+                break;
+            }
+            nr_pola++;
+        }
+        j++;
+        nr_lini++;
+    }
+    plik.close();
+    return ListaUzytkownikow.size();
+}
+
+int logowanie(vector<Uztkownicy> &ListaUzytkownikow)
+{
+    string nazwa,haslo;
+    cout<<"Podaj nazwe uzytkownika"<<endl;
+    cin>>nazwa;
+    for(int i =0; i<ListaUzytkownikow.size(); i++)
+    {
+        while (nazwa==ListaUzytkownikow[i].nazwa)
+        {
+            cout<<"Podaj haslo"<<endl;
+            cin>>haslo;
+            if(haslo==ListaUzytkownikow[i].haslo)
+            {
+                cout<<"Udalo sie zalogowac"<<endl;
+                Sleep(1500);
+                return ListaUzytkownikow[i].idUzytkownika;
+            }
+            else cout<<"Bledne haslo"<<endl;
+        }
+    }
+    cout<<"Nie ma uzytkownika o takiej nazwie"<<endl;
+    return 0;
+}
+void RejestracjaNowegoUzytkownika(vector<Uztkownicy> &uzytkownik, int idUzytkownika)
+{
+    int iloscKontaktow=uzytkownik.size();
+    idUzytkownika = uzytkownik[iloscKontaktow-1].idUzytkownika;
+
+    fstream plik;
+    uzytkownik.push_back(Uztkownicy());
+    cout<<"podaj nazwe uzytkownika"<<endl;
+    cin>>uzytkownik[iloscKontaktow].nazwa;
+    cout<<"podaj haslo"<<endl;
+    cin>>uzytkownik[iloscKontaktow].haslo;
+    cin.sync();
+
+    uzytkownik[iloscKontaktow].idUzytkownika=idUzytkownika+1;
+
+    plik.open("Uzytkownicy.txt",ios::out|ios::app);
+
+    if (plik.good())
+    {
+        plik<<uzytkownik[iloscKontaktow].idUzytkownika<<"|";
+        plik<<uzytkownik[iloscKontaktow].nazwa<<"|";
+        plik<<uzytkownik[iloscKontaktow].haslo<<"|";
+        plik<<endl;
+        plik.close();
+    }
+    else
+    {
+        cout << "Nie mozna otworzyc pliku: ksiazka Adresowa.txt" << endl;
+        Sleep(1500);
+    }
+    cout<<"Dodano nowego uzytkownika"<<endl;
+    system ("cls");
+    Sleep(1500);
+}
 int main()
 {
     char wybor;
-    int id=0;
+    int id=0,idUzytkownika=0;
     vector<Kontakt> osoby;
-    id=WczytajDaneDoTablicy(osoby);
+    vector<Uztkownicy> NowyUzytkownik;
+    vector<Uztkownicy> ListaUzytkownikow;
+    vector<Kontakt> WszyskieKontakty;
 
-    while(true)
+
+    WczytajUzytkownikow(ListaUzytkownikow);
+    while(idUzytkownika==0)
+    {
+    cout<<"1. Logowanie"<<endl;
+    cout<<"2. Rejestracja"<<endl;
+    cout<<"3. zakoncz"<<endl;
+
+    cin>>wybor;
+    switch(wybor)
+    {
+        case '1':
+        idUzytkownika=logowanie(ListaUzytkownikow);
+        break;
+        case '2':
+        RejestracjaNowegoUzytkownika(ListaUzytkownikow, idUzytkownika);
+        break;
+        case '3':
+        exit (0);
+    }
+
+
+    id=WczytajDaneDoTablicy(osoby,idUzytkownika);
+    while(idUzytkownika!=0)
     {
         system ("cls");
         cout<<">>KSIAZKA ADRESOWA<<"<<endl;
@@ -288,14 +491,14 @@ int main()
         cout<<"4. Wyowietl wszystkie kontakty"<<endl;
         cout<<"5. Edytuj kontakty"<<endl;
         cout<<"6. Usun kontakty"<<endl;
-        cout<<"7. zakoncz program "<<endl;
+        cout<<"7. Wyloguj "<<endl;
         cout<<"Twoj wybor:  "<<endl;
 
         cin>>wybor;
 
         if(wybor=='1')
         {
-            id=DodawanieKontaktu(osoby,id);
+            id=DodawanieKontaktu(osoby,id,idUzytkownika);
         }
         else if (wybor=='2')
         {
@@ -315,7 +518,10 @@ int main()
         }
         else if(wybor=='5')
         {
-            Edytowanie(osoby,id);
+            Edytowanie(osoby,WszyskieKontakty,id);
+            osoby.clear();
+            WczytajDaneDoTablicy(osoby,idUzytkownika);
+
         }
         else if(wybor=='6')
         {
@@ -323,13 +529,16 @@ int main()
         }
         else if (wybor=='7')
         {
-            exit (0);
+           idUzytkownika=0;
+           osoby.clear();
+           system("cls");
         }
         else
         {
             cout<<"Nie ma takiej opcji. Wybiersz numer od 1 do 4"<<endl;
             Sleep(1500);
         }
+    }
     }
     return 0;
 }
