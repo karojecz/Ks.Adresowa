@@ -213,7 +213,7 @@ int WczytajDaneDoTablicy(vector<Kontakt> &osoba, int idUzytkownika)
         return (0);
     }
     string linia,item, imie1, nazwisko1, telefon1, email1, adres1;
-    int nr_lini=1, j=0,id1,idUzytkownika1;
+    int nr_lini=1, j=0,id1=0,idUzytkownika1;
     while(getline(plik,linia))
     {
         int nr_pola=1;
@@ -277,10 +277,10 @@ void WyswietlWszystkieKontakty(vector<Kontakt> &osoby,int id)
     cout<<"Aby wrocic do menu wcisnij dowolny kalwisz"<<endl;
     getch();
 }
-void Edytowanie(vector<Kontakt>&osoby,vector<Kontakt> &WszystkieKontakty, int id)
+void Edytowanie(vector<Kontakt>&osoby,vector<Kontakt> &WszystkieKontakty)
 {
     WczytajCalyPlik(WszystkieKontakty);
-
+    int id;
     cout<<"podaj id osoby ktora chcesz edytowac "<<endl;
     cin>>id;
     system ("cls");
@@ -329,27 +329,28 @@ void Edytowanie(vector<Kontakt>&osoby,vector<Kontakt> &WszystkieKontakty, int id
     Sleep(1500);
 }
 
-    int UsunKontakty(vector<Kontakt>&osoby)
+    void UsunKontakty(vector<Kontakt>&osoby,vector<Kontakt> WszyskieKontakty)
 {
+    WczytajCalyPlik(WszyskieKontakty);
     int id;
     char wybor;
     cout<<"Podaj id osoby, ktora chcesz usunac z listy kontaktow"<<endl;
     cin>>id;
-    for(int i=0; i<osoby.size(); i++)
+    for(int i=0; i< WszyskieKontakty.size(); i++)
     {
-        if(osoby[i].id==id)
+        if( WszyskieKontakty[i].id==id)
         {
             cout<<"Czy na pewno chcesz usunac ten kontakt t/n ?"<<endl;
             cin>>wybor;
             if(wybor=='t')
             {
-                osoby.erase(osoby.begin()+i);
+                 WszyskieKontakty.erase( WszyskieKontakty.begin()+i);
                 cout<<"kontakt usuniety";
-                Sleep(1000);
+                Sleep(1500);
             }
         }
     }
-    ZapisWektoraDoPliku(osoby);
+    ZapisWektoraDoPliku( WszyskieKontakty);
 }
 int WczytajUzytkownikow(vector<Uztkownicy> &ListaUzytkownikow)
 {
@@ -415,10 +416,9 @@ int logowanie(vector<Uztkownicy> &ListaUzytkownikow)
     cout<<"Nie ma uzytkownika o takiej nazwie"<<endl;
     return 0;
 }
-void RejestracjaNowegoUzytkownika(vector<Uztkownicy> &uzytkownik, int idUzytkownika)
+int RejestracjaNowegoUzytkownika(vector<Uztkownicy> &uzytkownik)
 {
     int iloscKontaktow=uzytkownik.size();
-    idUzytkownika = uzytkownik[iloscKontaktow-1].idUzytkownika;
 
     fstream plik;
     uzytkownik.push_back(Uztkownicy());
@@ -428,7 +428,7 @@ void RejestracjaNowegoUzytkownika(vector<Uztkownicy> &uzytkownik, int idUzytkown
     cin>>uzytkownik[iloscKontaktow].haslo;
     cin.sync();
 
-    uzytkownik[iloscKontaktow].idUzytkownika=idUzytkownika+1;
+    uzytkownik[iloscKontaktow].idUzytkownika=iloscKontaktow+1;
 
     plik.open("Uzytkownicy.txt",ios::out|ios::app);
 
@@ -473,7 +473,7 @@ int main()
         idUzytkownika=logowanie(ListaUzytkownikow);
         break;
         case '2':
-        RejestracjaNowegoUzytkownika(ListaUzytkownikow, idUzytkownika);
+        RejestracjaNowegoUzytkownika(ListaUzytkownikow);
         break;
         case '3':
         exit (0);
@@ -518,14 +518,18 @@ int main()
         }
         else if(wybor=='5')
         {
-            Edytowanie(osoby,WszyskieKontakty,id);
+            Edytowanie(osoby,WszyskieKontakty);
             osoby.clear();
             WczytajDaneDoTablicy(osoby,idUzytkownika);
+            WszyskieKontakty.clear();
 
         }
         else if(wybor=='6')
         {
-            UsunKontakty(osoby);
+            UsunKontakty(osoby,WszyskieKontakty);
+            osoby.clear();
+            WczytajDaneDoTablicy(osoby,idUzytkownika);
+            WszyskieKontakty.clear();
         }
         else if (wybor=='7')
         {
