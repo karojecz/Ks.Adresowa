@@ -24,22 +24,22 @@ void ZapisWektoraDoPliku(vector<Kontakt>&osoby, int itr)
     fstream plik;
     plik.open("ksiazka Adresowa.txt",ios::out|ios::app);
 
-        if (plik.good())
-        {
-            plik<<osoby[itr].id<<"|";
-            plik<<osoby[itr].idUzytkownika<<"|";
-            plik<<osoby[itr].imie<<"|";
-            plik<<osoby[itr].nazwisko<<"|";
-            plik<<osoby[itr].telefon<<"|";
-            plik<<osoby[itr].email<<"|";
-            plik<<osoby[itr].adres<<"|";
-            plik<<endl;
-        }
-        else
-        {
-            cout << "Nie mozna otworzyc pliku: ksiazka Adresowa.txt" << endl;
-            Sleep(1500);
-        }
+    if (plik.good())
+    {
+        plik<<osoby[itr].id<<"|";
+        plik<<osoby[itr].idUzytkownika<<"|";
+        plik<<osoby[itr].imie<<"|";
+        plik<<osoby[itr].nazwisko<<"|";
+        plik<<osoby[itr].telefon<<"|";
+        plik<<osoby[itr].email<<"|";
+        plik<<osoby[itr].adres<<"|";
+        plik<<endl;
+    }
+    else
+    {
+        cout << "Nie mozna otworzyc pliku: ksiazka Adresowa.txt" << endl;
+        Sleep(1500);
+    }
     plik.close();
 }
 int NadawanieIdDoKontaku()
@@ -54,12 +54,12 @@ int NadawanieIdDoKontaku()
     }
     else
     {
-    while(getline(plik,OstatniaLinia))
-    {
-    stringstream ss(OstatniaLinia);
-    getline(ss, item, '|');
-    id=atoi(item.c_str());
-    }
+        while(getline(plik,OstatniaLinia))
+        {
+            stringstream ss(OstatniaLinia);
+            getline(ss, item, '|');
+            id=atoi(item.c_str());
+        }
     }
     return id;
 }
@@ -220,17 +220,17 @@ int Edytowanie(vector<Kontakt>&osoby)
     cin>>id;
     system ("cls");
     char wybor;
-    cout<<"1 - imie"<<endl;
-    cout<<"2 - nazwisko"<<endl;
-    cout<<"3 - numer telefonu"<<endl;
-    cout<<"4 - email"<<endl;
-    cout<<"5 - adres"<<endl;
 
     int iloscKontaktow=osoby.size();
     for(int i=0; i<iloscKontaktow; i++)
     {
         if(osoby[i].id==id)
         {
+            cout<<"1 - imie"<<endl;
+            cout<<"2 - nazwisko"<<endl;
+            cout<<"3 - numer telefonu"<<endl;
+            cout<<"4 - email"<<endl;
+            cout<<"5 - adres"<<endl;
             cin>>wybor;
             switch(wybor)
             {
@@ -256,11 +256,13 @@ int Edytowanie(vector<Kontakt>&osoby)
                 getline(cin,osoby[i].adres);
                 break;
             }
+            cout<<"dane zostaly zmienione";
+            return id;
         }
     }
-    cout<<"dane zostaly zmienione";
+    cout<<"Nie mozna edytowac kontaktu o takim id";
     Sleep(1500);
-    return id;
+    return 0;
 }
 int PrzepisanieDoPliku(vector<Kontakt>&osoby, int id, bool WpisUsuniety)
 {
@@ -331,11 +333,14 @@ int UsunKontakty(vector<Kontakt>&osoby)
             {
                 osoby.erase( osoby.begin()+i);
                 cout<<"kontakt usuniety";
-                Sleep(1500);
+                Sleep(2000);
+                return id;
             }
         }
     }
-    return id;
+    cout<<"Nie mozna usunac kontaktu o takim id";
+    Sleep(2000);
+    return 0;
 }
 int WczytajUzytkownikow(vector<Uztkownicy> &ListaUzytkownikow)
 {
@@ -502,15 +507,21 @@ int main()
             }
             else if(wybor=='5')
             {
-                id= Edytowanie(osoby);
+                id=Edytowanie(osoby);
                 WpisUsuniety=false;
-                PrzepisanieDoPliku(osoby,id,WpisUsuniety);
+                if (id!=0)
+                {
+                    PrzepisanieDoPliku(osoby,id,WpisUsuniety);
+                }
             }
             else if(wybor=='6')
             {
-                id= UsunKontakty(osoby);
+                id=UsunKontakty(osoby);
                 WpisUsuniety=true;
-                PrzepisanieDoPliku(osoby,id,WpisUsuniety);
+                if (id!=0)
+                {
+                    PrzepisanieDoPliku(osoby,id,WpisUsuniety);
+                }
             }
             else if (wybor=='7')
             {
