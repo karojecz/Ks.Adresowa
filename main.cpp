@@ -261,7 +261,7 @@ int Edytowanie(vector<Kontakt>&osoby)
         }
     }
     cout<<"Nie mozna edytowac kontaktu o takim id";
-    Sleep(1500);
+    Sleep(2500);
     return 0;
 }
 int PrzepisanieDoPliku(vector<Kontakt>&osoby, int id, bool WpisUsuniety)
@@ -433,12 +433,48 @@ int RejestracjaNowegoUzytkownika(vector<Uztkownicy> &uzytkownik)
     }
     else
     {
-        cout << "Nie mozna otworzyc pliku: ksiazka Adresowa.txt" << endl;
+        cout << "Nie mozna otworzyc pliku: uzytkownicy" << endl;
         Sleep(1500);
     }
     cout<<"Dodano nowego uzytkownika"<<endl;
     system ("cls");
     Sleep(1500);
+}
+void ZmianaHasla(vector<Uztkownicy> &ListaUzytkownikow, int idUzytkownika)
+{
+    string ObecneHaslo;
+    cout<<"Podaj stare haslo"<<endl;
+    cin>>ObecneHaslo;
+    if(ObecneHaslo==ListaUzytkownikow[idUzytkownika-1].haslo)
+    {
+        cout<<"Podaj nowe haslo"<<endl;
+        cin>>ListaUzytkownikow[idUzytkownika-1].haslo;
+        cout<<"haslo zmienione"<<endl;
+        Sleep(2000);
+    }
+}
+void PrzepisanieUzytkownikowDoPliku(vector<Uztkownicy> &ListaUzytkownikow)
+{
+    fstream plik;
+    int iloscUzytkownikow=ListaUzytkownikow.size();
+    plik.open("Uzytkownicy.txt",ios::out);
+
+    if (plik.good())
+    {
+        for(int i=0; i<iloscUzytkownikow; i++)
+        {
+        plik<<ListaUzytkownikow[i].idUzytkownika<<"|";
+        plik<<ListaUzytkownikow[i].nazwa<<"|";
+        plik<<ListaUzytkownikow[i].haslo<<"|";
+        plik<<endl;
+        }
+        plik.close();
+    }
+    else
+    {
+        cout << "Nie mozna otworzyc pliku:Uzytkownicy, func : przepisanie Uzytkownikow DO Pliku.txt" << endl;
+        Sleep(1500);
+    }
 }
 int main()
 {
@@ -468,7 +504,6 @@ int main()
         case '3':
             exit (0);
         }
-
         WczytajDaneDoTablicy(osoby,idUzytkownika);
         while(idUzytkownika!=0)
         {
@@ -480,8 +515,9 @@ int main()
             cout<<"4. Wyowietl wszystkie kontakty"<<endl;
             cout<<"5. Edytuj kontakty"<<endl;
             cout<<"6. Usun kontakty"<<endl;
-            cout<<"7. Wyloguj "<<endl;
-            cout<<"Twoj wybor:  "<<endl;
+            cout<<"7. Zmiana hasla"<<endl;
+            cout<<"8. Wyloguj"<<endl;
+            cout<<"Twoj wybor:"<<endl;
 
             cin>>wybor;
 
@@ -525,6 +561,11 @@ int main()
             }
             else if (wybor=='7')
             {
+                ZmianaHasla(ListaUzytkownikow, idUzytkownika);
+                PrzepisanieUzytkownikowDoPliku(ListaUzytkownikow);
+            }
+            else if (wybor=='8')
+            {
                 idUzytkownika=0;
                 osoby.clear();
                 system("cls");
@@ -538,3 +579,4 @@ int main()
     }
     return 0;
 }
+
