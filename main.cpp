@@ -264,7 +264,7 @@ int Edytowanie(vector<Kontakt>&osoby)
     Sleep(2500);
     return 0;
 }
-int PrzepisanieDoPliku(vector<Kontakt>&osoby, int id, bool WpisUsuniety)
+void PrzepisanieDoPliku(vector<Kontakt>&osoby, int id, bool WpisUsuniety)
 {
     string linia, item;
     int id1;
@@ -284,7 +284,7 @@ int PrzepisanieDoPliku(vector<Kontakt>&osoby, int id, bool WpisUsuniety)
         {
             cout<<"probem z pilkiem w funkcji edytowanie"<<endl;
             Sleep(1500);
-            return (0);
+            break;
         }
 
         if (plikTymczas.good())
@@ -407,7 +407,7 @@ int logowanie(vector<Uztkownicy> &ListaUzytkownikow)
     cout<<"Nie ma uzytkownika o takiej nazwie"<<endl;
     return 0;
 }
-int RejestracjaNowegoUzytkownika(vector<Uztkownicy> &uzytkownik)
+void RejestracjaNowegoUzytkownika(vector<Uztkownicy> &uzytkownik)
 {
     int iloscKontaktow=uzytkownik.size();
 
@@ -433,12 +433,12 @@ int RejestracjaNowegoUzytkownika(vector<Uztkownicy> &uzytkownik)
     }
     else
     {
-        cout << "Nie mozna otworzyc pliku: uzytkownicy" << endl;
-        Sleep(1500);
+        cout << "Nie mozna otworzyc pliku: uzytkownicy. funk rejestracja" << endl;
+        Sleep(3000);
     }
     cout<<"Dodano nowego uzytkownika"<<endl;
+    Sleep(2000);
     system ("cls");
-    Sleep(1500);
 }
 void ZmianaHasla(vector<Uztkownicy> &ListaUzytkownikow, int idUzytkownika)
 {
