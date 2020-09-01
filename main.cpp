@@ -9,15 +9,39 @@
 #include <cstdio>
 using namespace std;
 
-struct Kontakt
+class Kontakt
 {
     int id,idUzytkownika;
     string imie,nazwisko,adres,email,telefon;
+
+public:
+    friend int NadawanieIdDoKontaku();
+    friend void ZapisWektoraDoPliku(vector<Kontakt>&osoby, int itr);
+    friend int DodawanieKontaktu(vector<Kontakt> &osoby,int idUzytkownika);
+    friend void WyswitlanieWynikuWyszukiwania(vector<Kontakt> &osoby, int NumerZnalenionejOsoby);
+    friend void SzukajPoImieniu(vector<Kontakt> &osoby,int id);
+    friend void SzukajPoNazwisku(vector<Kontakt> &osoby,int id);
+    friend void WczytajDaneDoTablicy(vector<Kontakt> &osoba, int idUzytkownika);
+    friend void WyswietlWszystkieKontakty(vector<Kontakt> &osoby,int id);
+    friend int Edytowanie(vector<Kontakt>&osoby);
+    friend int UsunKontakty(vector<Kontakt>&osoby);
+    friend void PrzepisanieDoPliku(vector<Kontakt>&osoby, int id, bool WpisUsuniety);
+
+
+
+
+
 };
-struct Uztkownicy
+class Uzytkownicy
 {
     int idUzytkownika;
     string nazwa,haslo;
+    public:
+    friend void RejestracjaNowegoUzytkownika(vector<Uzytkownicy> &uzytkownik);
+    friend void ZmianaHasla(vector<Uzytkownicy> &ListaUzytkownikow, int idUzytkownika);
+    friend int logowanie(vector<Uzytkownicy> &ListaUzytkownikow);
+    friend int WczytajUzytkownikow(vector<Uzytkownicy> &ListaUzytkownikow);
+    friend void PrzepisanieUzytkownikowDoPliku(vector<Uzytkownicy> &ListaUzytkownikow);
 };
 void ZapisWektoraDoPliku(vector<Kontakt>&osoby, int itr)
 {
@@ -342,7 +366,7 @@ int UsunKontakty(vector<Kontakt>&osoby)
     Sleep(2000);
     return 0;
 }
-int WczytajUzytkownikow(vector<Uztkownicy> &ListaUzytkownikow)
+int WczytajUzytkownikow(vector<Uzytkownicy> &ListaUzytkownikow)
 {
     fstream plik;
     plik.open("Uzytkownicy.txt",ios::in);
@@ -358,7 +382,7 @@ int WczytajUzytkownikow(vector<Uztkownicy> &ListaUzytkownikow)
     while(getline(plik,linia))
     {
         int nr_pola=1;
-        ListaUzytkownikow.push_back(Uztkownicy());
+        ListaUzytkownikow.push_back(Uzytkownicy());
         stringstream ss(linia);
         while (getline(ss, item, '|'))
         {
@@ -383,7 +407,7 @@ int WczytajUzytkownikow(vector<Uztkownicy> &ListaUzytkownikow)
     return ListaUzytkownikow.size();
 }
 
-int logowanie(vector<Uztkownicy> &ListaUzytkownikow)
+int logowanie(vector<Uzytkownicy> &ListaUzytkownikow)
 {
     string nazwa,haslo;
     cout<<"Podaj nazwe uzytkownika"<<endl;
@@ -407,12 +431,12 @@ int logowanie(vector<Uztkownicy> &ListaUzytkownikow)
     cout<<"Nie ma uzytkownika o takiej nazwie"<<endl;
     return 0;
 }
-void RejestracjaNowegoUzytkownika(vector<Uztkownicy> &uzytkownik)
+void RejestracjaNowegoUzytkownika(vector<Uzytkownicy> &uzytkownik)
 {
     int iloscKontaktow=uzytkownik.size();
 
     fstream plik;
-    uzytkownik.push_back(Uztkownicy());
+    uzytkownik.push_back(Uzytkownicy());
     cout<<"podaj nazwe uzytkownika"<<endl;
     cin>>uzytkownik[iloscKontaktow].nazwa;
     cout<<"podaj haslo"<<endl;
@@ -440,7 +464,7 @@ void RejestracjaNowegoUzytkownika(vector<Uztkownicy> &uzytkownik)
     Sleep(2000);
     system ("cls");
 }
-void ZmianaHasla(vector<Uztkownicy> &ListaUzytkownikow, int idUzytkownika)
+void ZmianaHasla(vector<Uzytkownicy> &ListaUzytkownikow, int idUzytkownika)
 {
     string ObecneHaslo;
     cout<<"Podaj stare haslo"<<endl;
@@ -453,7 +477,7 @@ void ZmianaHasla(vector<Uztkownicy> &ListaUzytkownikow, int idUzytkownika)
         Sleep(2000);
     }
 }
-void PrzepisanieUzytkownikowDoPliku(vector<Uztkownicy> &ListaUzytkownikow)
+void PrzepisanieUzytkownikowDoPliku(vector<Uzytkownicy> &ListaUzytkownikow)
 {
     fstream plik;
     int iloscUzytkownikow=ListaUzytkownikow.size();
@@ -482,8 +506,9 @@ int main()
     int id=0,idUzytkownika=0;
     bool WpisUsuniety;
     vector<Kontakt> osoby;
-    vector<Uztkownicy> NowyUzytkownik;
-    vector<Uztkownicy> ListaUzytkownikow;
+    vector<Uzytkownicy> NowyUzytkownik;
+    vector<Uzytkownicy> ListaUzytkownikow;
+
 
     WczytajUzytkownikow(ListaUzytkownikow);
     while(idUzytkownika==0)
